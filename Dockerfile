@@ -1,26 +1,34 @@
-# select the base image to build our own customised node app micro-service
+# Use the base image
+FROM node AS app
 
-FROM node:alpine
-
-# working directory inside the container
-
+# Define the working DIR inside the container
 WORKDIR /usr/src/app
 
-# copy dependencies
-
+# Copy dependencies - If you don't know go to the documentation
 COPY package*.json ./
 
-# install npm
-
+# Install npm
 RUN npm install
 
-# from current folder we are in we would like to copy everything into /usr/src/app
+# Copy everything from OS to container
 COPY . .
 
-# expose the port
+# Second stage of our build for production ~
+# multi stage Docker build
+#FROM node:alpine
 
+# Copy only essential things to this layer
+# This line compresses the size whilst still providing full functionality
+#COPY --from=app /usr/src/app /usr/src/app
+
+# Define work directory in second stage
+#WORKDIR /usr/src/app
+
+# Open up the port (3000) - Default port of Node.JS 
 EXPOSE 3000
 
-# start the app with CMD
+# Start NPM
+# CMD ["npm", "start"]
 
-CMD ["node", "app.js"]
+# RUN THE APP WTIH CMD
+CMD ["node","app.js"]
